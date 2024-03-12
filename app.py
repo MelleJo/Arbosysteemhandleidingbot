@@ -12,9 +12,9 @@ BASE_DIR = os.path.join(os.getcwd(), "manuals")
 
 # Specified PDF documents
 DOC_PATHS = [
-    os.path.join(BASE_DIR, "document_1.pdf"),
-    os.path.join(BASE_DIR, "document_2.pdf"),
-    os.path.join(BASE_DIR, "document_3.pdf"),
+    os.path.join(BASE_DIR, "Handleiding DialoogXpert - medewerker.pdf"),
+    os.path.join(BASE_DIR, "NLG Arbo - Gebruikersinstructie NLG Arbo gebruikers versie 1.7.pdf"),
+    os.path.join(BASE_DIR, "NLG Arbo - Gebruikersinstructie Werkgevers versie 1.5_ (002).pdf"),
 ]
 
 def extract_text_from_pdf(file_path):
