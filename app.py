@@ -107,18 +107,16 @@ def display_search_results(search_results):
     
 
 def main():
-    st.title("Polisvoorwaardentool - testversie 1.2.2.")
-    all_documents = get_all_documents()
-    selection_method = st.radio("Hoe wil je de polisvoorwaarden selecteren?", 
-                                ['Zoeken'])
+    st.title("Systeemhandleidingbot voor Arbo")
+    documents = get_documents('manuals')
 
-    if selection_method == 'Zoeken':
-        search_query = st.text_input("Zoek naar een polisvoorwaardenblad:", "")
-        if search_query:
-            search_results = [doc for doc in all_documents if search_query.lower() in doc['title'].lower()]
-            display_search_results(search_results)
+    selected_doc_title = st.selectbox("Kies een document:", list(documents.keys()))
+    selected_document_path = os.path.join(BASE_DIR, documents[selected_doc_title])
 
+    if user_question:
+       answer = process_document(selected_document_path, user_question)
+       st.write(answer)
     
-
+    
 if __name__ == "__main__":
     main()
