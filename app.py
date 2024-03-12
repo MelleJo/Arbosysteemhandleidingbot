@@ -40,20 +40,20 @@ def index_documents():
 def process_question(question, custom_prompt_template):
     """Processes a user's question against the indexed documents."""
     with st.spinner('Denken...'):
-        faiss_index = index_documents()  # Index documents on each call for simplicity, consider caching for optimization
+        faiss_index = index_documents()  # kan hier evt nog cachen ipv invoke elke keer
         embeddings = OpenAIEmbeddings()
         llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], model="gpt-4-turbo", temperature=0)
         
-        # Use the custom prompt template if provided
+        # invoken van de custom prompt
         if custom_prompt_template:
             prompt = ChatPromptTemplate.from_template(custom_prompt_template)
         else:
             prompt = ChatPromptTemplate.from_template("Hier is wat je moet weten: {input}")
         
-        # Configure the chain for document retrieval and processing
+        # chain voor de llm
         chain = faiss_index | prompt | llm | StrOutputParser()
         
-        # Run the chain with the question
+        # chain runnen
         answer = chain.run(question)
         
         return answer
@@ -61,17 +61,17 @@ def process_question(question, custom_prompt_template):
 def main():
     st.title("NLG Arbo handleidingenbot - testversie 0.1.0")
     
-    # Input for custom prompt template
+    # Custom prompt
     custom_prompt_template = st.text_area("Aangepast prompt sjabloon:", value="Geef hier je prompt sjabloon in.", height=150)
     
-    # Input for user question
+    # User input
     user_question = st.text_input("Wat wil je graag weten?")
     
     if user_question:
-        # Process the question against the indexed documents
+        # Vewerken van de vraag met de documenten
         answer = process_question(user_question, custom_prompt_template if custom_prompt_template != "Geef hier je prompt sjabloon in." else "")
         
-        # Display the answer
+        # Laat het antwoord zien op het scherm
         st.write(answer)
 
 if __name__ == "__main__":
