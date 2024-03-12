@@ -7,7 +7,8 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 # Map met handleidingen
-BASE_DIR = "/mnt/data"
+BASE_DIR = os.path.join(os.getcwd(), "manuals")
+
 
 # Specifieke PDF-documenten
 DOC_PATHS = [
