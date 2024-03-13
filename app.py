@@ -82,9 +82,10 @@ def main():
     st.title("Systeemhandleidingbot voor Arbo")
     documents = get_documents('manuals')
     
+    selected_doc_title = st.selectbox("Kies een document:", documents)
+    selected_document_path = os.path.join(BASE_DIR, 'manuals', selected_doc_title)
 
-    selected_doc_title = st.selectbox("Kies een document:", list(documents.keys()))
-    selected_document_path = os.path.join(BASE_DIR, documents[selected_doc_title])
+    
     user_question = st.text_input("Wat wil je graag weten?")
 
 
