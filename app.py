@@ -78,6 +78,14 @@ def process_document(document_path, user_question):
 def main():
     st.title("Systeemhandleidingbot voor Arbo")
     documents = get_documents('manuals')
+    with open(selected_document_path, "rb") as pdf_file:
+        st.download_button(
+            label="Download PDF",
+            data=pdf_file,
+            file_name=selected_doc_title,
+            mime="application/pdf"
+        )
+
     
     selected_doc_title = st.selectbox("Kies een document:", documents)
     selected_document_path = os.path.join(BASE_DIR, 'manuals', selected_doc_title)
