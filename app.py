@@ -76,42 +76,21 @@ def process_document(document_path, user_question):
     
 
 
-def display_search_results(search_results):
-    if not search_results:
-        st.write("Geen documenten gevonden.")
-        return
-    
-    if isinstance(search_results[0], str):
-        search_results = [{'title': filename, 'path': os.path.join(BASE_DIR, filename)} for filename in search_results]
-
-    selected_title = st.selectbox("Zoekresultaten:", [doc['title'] for doc in search_results])
-    selected_document = next((doc for doc in search_results if doc['title'] == selected_title), None)
-    
-    if selected_document:
-        user_question = st.text_input("Stel een vraag over de polisvoorwaarden:")
-        if user_question:
-            # Call process_document and use its return value as the argument for st.write_stream
-            document_stream = process_document(selected_document['path'], user_question)
-            st.write_stream(document_stream)  # Correctly pass the generator/stream to st.write_stream
-
-        # Download button for the selected PDF file
-        with open(selected_document['path'], "rb") as file:
-            btn = st.download_button(
-                label="Download polisvoorwaarden",
-                data=file,
-                file_name=selected_document['title'],
-                mime="application/pdf"
-            )
-
+d
 
     
 
 def main():
     st.title("Systeemhandleidingbot voor Arbo")
     documents = get_documents('manuals')
+    
 
     selected_doc_title = st.selectbox("Kies een document:", list(documents.keys()))
     selected_document_path = os.path.join(BASE_DIR, documents[selected_doc_title])
+    user_question = st.text_input("Wat wil je graag weten?")
+
+
+
 
     if user_question:
        answer = process_document(selected_document_path, user_question)
