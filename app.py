@@ -76,8 +76,6 @@ def process_document(document_path, user_question):
     
 
 
-d
-
     
 
 def main():
