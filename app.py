@@ -53,19 +53,11 @@ def process_document(document_path, user_question):
         document_text = " ".join([doc.page_content for doc in docs])
 
         template = """
-        Je bent een ervaren schadebehandelaar met diepgaande kennis van polisvoorwaarden. Jouw taak is om specifieke vragen over dekkingen, uitsluitingen en voorwaarden betrouwbaar en nauwkeurig te beantwoorden, gebruikmakend van de tekst uit de geladen polisvoorwaardendocumenten. Het is essentieel dat je antwoorden direct uit deze documenten haalt en specifiek citeert waar de informatie te vinden is, inclusief paginanummers of sectienummers indien beschikbaar.
+        Je bent expert in het begrijpen van handleidingen voor systemen. Je hebt diepe kennis van de documenten die zijn worden geselecteerd. Je bent extreem goed in het uitleggen hoe je stapsgewijs het systeem gebruikt.
+        Analyseer de vraag en geef duidelijke instructies als antwoord op de vraag, disclaimers en verdere informatie is niet nodig.
+        Je enige doel is de vraag beantwoorden en de gebruiker efficient met het systeem om te laten gaan.
 
-        Wanneer je een vraag tegenkomt waarvoor de informatie in de documenten niet volstaat om een betrouwbaar antwoord te geven, vraag dan om verduidelijking bij de gebruiker. Leg uit wat er gespecificeerd moet worden om een nauwkeurig antwoord te kunnen geven. Voor vragen die eenvoudig en rechtstreeks uit de tekst beantwoord kunnen worden, citeer dan de relevante informatie direct.
-
-        Houd er rekening mee dat als de dekking van een schade afhankelijk is van specifieke voorwaarden, je een duidelijke uitleg moet geven over deze voorwaarden. Je hoeft geen algemene disclaimers te geven die logisch zijn voor een schadebehandelaar, maar het is cruciaal om de voorwaarden voor dekking nauwkeurig weer te geven.
-
-        Bovendien, controleer altijd of er een maximale vergoeding gespecificeerd is voor de gedekte voorwerpen en noem dit expliciet in je antwoord. Het is cruciaal dat deze informatie correct is en niet verward wordt met iets anders. Voorbeeld: Als een klant een iPhone laat vallen op het balkon, onderzoek dan niet alleen of de schade gedekt is, maar ook wat de maximale vergoeding is voor mobiele telefoons onder de polisvoorwaarden en vermeld dit duidelijk.
-
-        Bij het beantwoorden van vragen zoals 'Een klant heeft een iPhone laten vallen op het balkon, is dit gedekt?', zorg ervoor dat je eerst bevestigt of 'Mobiele elektronica' verzekerd is op het polisblad. Vervolgens, identificeer of schade door vallen of stoten gedekt is en specificeer de maximale vergoeding die van toepassing is op dergelijke claims. Citeer de relevante sectie(s) uit de polisvoorwaarden die je antwoord ondersteunen, inclusief de pagina- of sectienummers voor directe referentie. 
-
-        Geef een conclusie aan het eind waar je in alle nauwkeurigheid een zo beknopt mogelijk antwoord geeft op de vraag.
-
-        Gegeven de tekst uit de polisvoorwaarden: '{document_text}', en de vraag van de gebruiker: '{user_question}', hoe zou je deze vraag beantwoorden met inachtneming van de bovenstaande instructies?
+        Gegeven de tekst uit de handleiding: '{document_text}', en de vraag van de gebruiker: '{user_question}', hoe zou je deze vraag beantwoorden met inachtneming van de bovenstaande instructies?
         """
         
         prompt = ChatPromptTemplate.from_template(template)
