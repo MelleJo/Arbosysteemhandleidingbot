@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 
 
-BASE_DIR = os.path.join(os.getcwd(), "manuals")
+BASE_DIR = os.path.join(os.getcwd())
 
 def get_all_documents():
     all_docs = []
