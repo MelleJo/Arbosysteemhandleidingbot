@@ -38,8 +38,39 @@ def extract_text_from_pdf_by_page(file_path):
                 pages_text.append(text)
     return pages_text
 
-def process_documents(user_question):
+def process_document(document_path, user_question):
     with st.spinner('Denken...'):
+        # Extract text from the document
+        document_pages = extract_text_from_pdf_by_page(document_path)
+        if not document_pages or all(page.strip() == "" for page in document_pages):
+            st.error("No valid text extracted from the document. Please check the document format or content.")
+            return
+
+        embeddings = OpenAIEmbeddings()
+        knowledge_base = FAISS.from_texts(document_pages, embeddings)
+        docs = knowledge_base.similarity_search(user_question)
+        document_text = " ".join([doc.page_content for doc in docs])
+
+        template = """
+        Je bent expert in het begrijpen van handleidingen voor systemen. Je hebt diepe kennis van de documenten die zijn worden geselecteerd. Je bent extreem goed in het uitleggen hoe je stapsgewijs het systeem gebruikt.
+        Analyseer de vraag en geef duidelijke instructies als antwoord op de vraag, disclaimers en verdere informatie is niet nodig.
+        Je enige doel is de vraag beantwoorden en de gebruiker efficiënt met het systeem om te laten gaan.
+
+        Gegeven de tekst uit de handleiding: '{document_text}', en de vraag van de gebruiker: '{user_question}', hoe zou je deze vraag beantwoorden met inachtneming van de bovenstaande instructies?
+        """
+        
+        prompt = ChatPromptTemplate.from_template(template)
+        
+        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], model="gpt-4-turbo-preview", temperature=0, streaming=True)
+        chain = prompt | llm | StrOutputParser()
+        answer = chain.stream({
+            "document_text": document_text,
+            "user_question": user_question,
+        })
+        return answer
+
+def process_documents(user_question):
+    with st.spinner('Processing...'):
         all_docs = get_all_documents()
         all_texts = []
         for doc in all_docs:
@@ -48,7 +79,7 @@ def process_documents(user_question):
                 all_texts.extend(document_pages)
 
         if not all_texts:
-            st.error("No valid text extracted from any document. Please check the document formats or content.")
+            st.error("No valid text extracted from any documents. Please check the document formats or content.")
             return
 
         embeddings = OpenAIEmbeddings()
@@ -59,7 +90,7 @@ def process_documents(user_question):
         template = """
         Je bent expert in het begrijpen van handleidingen voor systemen. Je hebt diepe kennis van de documenten die zijn worden geselecteerd. Je bent extreem goed in het uitleggen hoe je stapsgewijs het systeem gebruikt.
         Analyseer de vraag en geef duidelijke instructies als antwoord op de vraag, disclaimers en verdere informatie is niet nodig.
-        Je enige doel is de vraag beantwoorden en de gebruiker efficient met het systeem om te laten gaan.
+        Je enige doel is de vraag beantwoorden en de gebruiker efficiënt met het systeem om te laten gaan.
 
         Gegeven de tekst uit de handleiding: '{document_text}', en de vraag van de gebruiker: '{user_question}', hoe zou je deze vraag beantwoorden met inachtneming van de bovenstaande instructies?
         """
@@ -67,11 +98,12 @@ def process_documents(user_question):
         prompt = ChatPromptTemplate.from_template(template)
         
         llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], model="gpt-4-turbo-preview", temperature=0, streaming=True)
-        chain = prompt | llm | StrOutputParser() 
-        return chain.stream({
+        chain = prompt | llm | StrOutputParser()
+        answer = chain.stream({
             "document_text": document_text,
             "user_question": user_question,
         })
+        return answer
 
     
 
