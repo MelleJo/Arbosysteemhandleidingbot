@@ -38,17 +38,21 @@ def extract_text_from_pdf_by_page(file_path):
                 pages_text.append(text)
     return pages_text
 
-def process_document(document_path, user_question):
+def process_documents(user_question):
     with st.spinner('Denken...'):
-        # Extract text from the document
-        document_pages = extract_text_from_pdf_by_page(document_path)
-        if not document_pages or all(page.strip() == "" for page in document_pages):
-        
-            st.error("No valid text extracted from the document. Please check the document format or content.")
+        all_docs = get_all_documents()
+        all_texts = []
+        for doc in all_docs:
+            document_pages = extract_text_from_pdf_by_page(doc['path'])
+            if document_pages:
+                all_texts.extend(document_pages)
+
+        if not all_texts:
+            st.error("No valid text extracted from any document. Please check the document formats or content.")
             return
 
         embeddings = OpenAIEmbeddings()
-        knowledge_base = FAISS.from_texts(document_pages, embeddings)
+        knowledge_base = FAISS.from_texts(all_texts, embeddings)
         docs = knowledge_base.similarity_search(user_question)
         document_text = " ".join([doc.page_content for doc in docs])
 
@@ -61,15 +65,14 @@ def process_document(document_path, user_question):
         """
         
         prompt = ChatPromptTemplate.from_template(template)
-
         
-        # Perform similarity search
         llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], model="gpt-4-turbo-preview", temperature=0, streaming=True)
         chain = prompt | llm | StrOutputParser() 
         return chain.stream({
             "document_text": document_text,
             "user_question": user_question,
         })
+
     
 
 
@@ -77,30 +80,36 @@ def process_document(document_path, user_question):
 
 def main():
     st.title("Systeemhandleidingbot voor Arbo - testversie 0.2.")
-    documents = get_documents('manuals')
-    selected_doc_title = st.selectbox("Kies een document:", documents)
-    selected_document_path = os.path.join(BASE_DIR, 'manuals', selected_doc_title)
     
-    with open(selected_document_path, "rb") as pdf_file:
-        st.download_button(
-            label="Download PDF",
-            data=pdf_file,
-            file_name=selected_doc_title,
-            mime="application/pdf"
-        )
+    query_option = st.radio(
+        "Waar wil je een vraag over stellen?",
+        ('Een specifiek document', 'Alle documenten'))
 
+    if query_option == 'Een specifiek document':
+        documents = get_documents('manuals')
+        selected_doc_title = st.selectbox("Kies een document:", documents)
+        selected_document_path = os.path.join(BASE_DIR, 'manuals', selected_doc_title)
+        
+        with open(selected_document_path, "rb") as pdf_file:
+            st.download_button(
+                label="Download PDF",
+                data=pdf_file,
+                file_name=selected_doc_title,
+                mime="application/pdf"
+            )
 
-
-    
     user_question = st.text_input("Wat wil je graag weten?")
 
-
-
-
     if user_question:
-       answer = process_document(selected_document_path, user_question)
-       st.write(answer)
-    
-    
+        if query_option == 'Een specifiek document' and selected_document_path:
+            answer = process_document(selected_document_path, user_question)
+        elif query_option == 'Alle documenten':
+            answer = process_documents(user_question)
+        else:
+            st.error("Selecteer een document of kies om alle documenten te vragen.")
+            return
+
+        st.write(answer)
+
 if __name__ == "__main__":
     main()
