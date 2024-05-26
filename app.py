@@ -61,7 +61,7 @@ def process_document(document_path, user_question):
         
         prompt = ChatPromptTemplate.from_template(template)
         
-        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], model="gpt-4-turbo-preview", temperature=0, streaming=True)
+        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], model="gpt-4o", temperature=0, streaming=True)
         chain = prompt | llm | StrOutputParser()
         answer = chain.stream({
             "document_text": document_text,
@@ -70,7 +70,7 @@ def process_document(document_path, user_question):
         return answer
 
 def process_documents(user_question):
-    with st.spinner('Processing...'):
+    with st.spinner('Denken...'):
         all_docs = get_all_documents()
         all_texts = []
         for doc in all_docs:
@@ -97,7 +97,7 @@ def process_documents(user_question):
         
         prompt = ChatPromptTemplate.from_template(template)
         
-        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], model="gpt-4-turbo-preview", temperature=0, streaming=True)
+        llm = ChatOpenAI(api_key=st.secrets["OPENAI_API_KEY"], model="gpt-4o", temperature=0, streaming=True)
         chain = prompt | llm | StrOutputParser()
         answer = chain.stream({
             "document_text": document_text,
